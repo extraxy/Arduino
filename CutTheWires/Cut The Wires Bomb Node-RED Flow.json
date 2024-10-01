@@ -1,0 +1,250 @@
+[
+    {
+        "id": "7daa0e0f.94fa2",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "1d07d6e1.2b34c1",
+        "type": "serial out",
+        "z": "7daa0e0f.94fa2",
+        "name": "Send to Arduino",
+        "serial": "68c2fc3e.0d9184",
+        "x": 500,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "9b517e5e.bd3368",
+        "type": "file in",
+        "z": "7daa0e0f.94fa2",
+        "name": "Load Audio File",
+        "filename": "C:\\PlayfulTechnology\\Bomb\\Explosion.mp3",
+        "format": "",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "x": 220,
+        "y": 380,
+        "wires": [
+            [
+                "f2e8096e.2d5958"
+            ]
+        ]
+    },
+    {
+        "id": "f2e8096e.2d5958",
+        "type": "ui_audio",
+        "z": "7daa0e0f.94fa2",
+        "name": "Send to Audio Out",
+        "group": "458d5b5c.925d54",
+        "voice": "",
+        "always": "",
+        "x": 430,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "31fe226f.b14326",
+        "type": "mosca in",
+        "z": "7daa0e0f.94fa2",
+        "mqtt_port": 1883,
+        "mqtt_ws_port": 8080,
+        "name": "",
+        "username": "",
+        "password": "",
+        "dburl": "",
+        "x": 110,
+        "y": 40,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "9439a344.ae6648",
+        "type": "mqtt in",
+        "z": "7daa0e0f.94fa2",
+        "name": "Incoming MQTT Message",
+        "topic": "ToHost",
+        "qos": "2",
+        "datatype": "auto",
+        "broker": "27eb8d8f.d5998a",
+        "x": 130,
+        "y": 140,
+        "wires": [
+            [
+                "8f4149e5.0b792"
+            ]
+        ]
+    },
+    {
+        "id": "bb0eca44.35097",
+        "type": "function",
+        "z": "7daa0e0f.94fa2",
+        "name": "Create DMX Lighting Pattern",
+        "func": "// Send a series of flashes of varying brightness as follows\nvar lightningIntensities = [255,255,255,255,255,255,255,255,0,0,0,0,0,0,0,0,0,0,0];\nfor(var i=0; i<lightningIntensities.length; i++){\n    msg.payload = {\n    \"channels\": [\n        {\n            \"channel\": 1,\n            \"value\": lightningIntensities[i]\n        },\n        {\n            \"channel\": 2,\n            \"value\": 255\n        },\n        {\n            \"channel\": 3,\n            \"value\": 255\n        },\n        {\n            \"channel\": 4,\n            \"value\": 255\n        }\n    ]};\n  node.send(msg);  \n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 260,
+        "y": 300,
+        "wires": [
+            [
+                "1d07d6e1.2b34c1"
+            ]
+        ]
+    },
+    {
+        "id": "8f4149e5.0b792",
+        "type": "switch",
+        "z": "7daa0e0f.94fa2",
+        "name": "Check message content",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "BOOM",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 390,
+        "y": 140,
+        "wires": [
+            [
+                "e0e30047.49848"
+            ]
+        ]
+    },
+    {
+        "id": "7cb42169.2cead",
+        "type": "ui_button",
+        "z": "7daa0e0f.94fa2",
+        "name": "",
+        "group": "458d5b5c.925d54",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "Manual Override Button",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "",
+        "x": 130,
+        "y": 220,
+        "wires": [
+            [
+                "5d1c154d.d64abc"
+            ]
+        ]
+    },
+    {
+        "id": "e0e30047.49848",
+        "type": "link out",
+        "z": "7daa0e0f.94fa2",
+        "name": "",
+        "links": [
+            "9eb356fe.05302"
+        ],
+        "x": 555,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "5d1c154d.d64abc",
+        "type": "link out",
+        "z": "7daa0e0f.94fa2",
+        "name": "",
+        "links": [
+            "9eb356fe.05302"
+        ],
+        "x": 275,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "9eb356fe.05302",
+        "type": "link in",
+        "z": "7daa0e0f.94fa2",
+        "name": "",
+        "links": [
+            "5d1c154d.d64abc",
+            "e0e30047.49848"
+        ],
+        "x": 55,
+        "y": 340,
+        "wires": [
+            [
+                "bb0eca44.35097",
+                "9b517e5e.bd3368"
+            ]
+        ]
+    },
+    {
+        "id": "68c2fc3e.0d9184",
+        "type": "serial-port",
+        "z": "",
+        "serialport": "COM5",
+        "serialbaud": "9600",
+        "databits": "8",
+        "parity": "none",
+        "stopbits": "1",
+        "waitfor": "",
+        "newline": "\\n",
+        "bin": "false",
+        "out": "char",
+        "addchar": "",
+        "responsetimeout": "10000"
+    },
+    {
+        "id": "458d5b5c.925d54",
+        "type": "ui_group",
+        "z": "",
+        "name": "Sound and Lighting",
+        "tab": "2c4a7753.1a3638",
+        "order": 4,
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "27eb8d8f.d5998a",
+        "type": "mqtt-broker",
+        "z": "",
+        "name": "MOSCA",
+        "broker": "localhost",
+        "port": "1883",
+        "tls": "",
+        "clientid": "",
+        "usetls": false,
+        "compatmode": true,
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": ""
+    },
+    {
+        "id": "2c4a7753.1a3638",
+        "type": "ui_tab",
+        "z": "",
+        "name": "Lighting",
+        "icon": "dashboard",
+        "disabled": false,
+        "hidden": false
+    }
+]
