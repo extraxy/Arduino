@@ -37,6 +37,8 @@ const byte endPin = 10;
 const byte buzzerPin = 6;
 //release on win 
 const byte relayPin = 13;
+//This is my led
+const byte ledPin = 7;
 // GLOBALS
 // Keep track of the current states of the game
 enum GameState {FAILED, IN_PROGRESS, SUCCESS};
@@ -60,31 +62,41 @@ void loop() {
   switch(gameState) {
    
     case GameState::IN_PROGRESS:
-      if(!digitalRead(endPin)) {
+      if (!digitalRead(endPin)) {
         gameState = GameState::SUCCESS;
         Serial.println("Congratulations!");
         // TEMP REMOVE OLD SOUND
         //tone(buzzerPin, 440, 50);
         //delay(60);
         //tone(buzzerPin, 587, 250);
+        digitalWrite(ledPin, HIGH);
+        delay(500);
+        digitalWrite(ledPin, LOW);
+        delay(500);
+        digitalWrite(ledPin, HIGH);
+        delay(500);
+        digitalWrite(ledPin, LOW);
+        delay(500);
+
         int size = sizeof(durations) / sizeof(int);
 
         for (int note = 0; note < size; note++) {
-        //to calculate the note duration, take one second divided by the note type.
-        //e.g. quarter note = 1000 / 4, eighth note = 1000/8, etc.
-        int duration = 1000 / durations[note];
-        tone(BUZZ_PIN, melody[note], duration);
+          //to calculate the note duration, take one second divided by the note type.
+          //e.g. quarter note = 1000 / 4, eighth note = 1000/8, etc.
+          int duration = 1000 / durations[note];
+          tone(BUZZ_PIN, melody[note], duration);
 
-        //to distinguish the notes, set a minimum time between them.
-        //the note's duration + 30% seems to work well:
-        int pauseBetweenNotes = duration * 1.30;
-        delay(pauseBetweenNotes);
-    
-        //stop the tone playing:
-        noTone(BUZZ_PIN);
-
-      }
-      }else if(!digitalRead(failPin)) {
+          //to distinguish the notes, set a minimum time between them.
+          //the note's duration + 30% seems to work well:
+          int pauseBetweenNotes = duration * 1.30;
+          delay(pauseBetweenNotes);
+      
+          //stop the tone playing:
+          noTone(BUZZ_PIN);
+          
+        }
+        
+      } else if (!digitalRead(failPin)) {
         gameState = GameState::FAILED;
         Serial.println("FAILED");
         tone(buzzerPin, 440, 200);
@@ -94,14 +106,19 @@ void loop() {
         tone(buzzerPin, 392, 200);
         delay(200);
         tone(buzzerPin, 370, 400);
+        digitalWrite(ledPin, HIGH);
+        
       }
       break;
 
     case GameState::FAILED:
     case GameState::SUCCESS:
-    digitalWrite(relayPin, LOW);
+      //Serial.println("SUCCES!");
+      digitalWrite(relayPin, LOW);
+    
       if(!digitalRead(startPin)) {
         gameState = GameState::IN_PROGRESS;
+        digitalWrite(ledPin, LOW);
         digitalWrite(relayPin, HIGH);
         Serial.println("New Game Started");
         tone(buzzerPin, 440, 100);
@@ -110,6 +127,6 @@ void loop() {
         delay(120);
         tone(buzzerPin, 659, 200);
       }
-      break;    
+    break;    
   }
 }
